@@ -46,7 +46,7 @@ The root level must be always a folder but you can have as many files and folder
 
 Since the ```map``` is constant, use ```.find()``` to get a specific item:
 
-```
+``` c++
 if (auto data = emico::assets.find("shaders.cartoon.glsl"); data != emico::assets.end()) {
 	data -> ...
 }
