@@ -27,6 +27,8 @@ def begin(path: str):
 	symbols = []
 	src_paths = []
 	for category in os.listdir(path):
+		if not os.path.isdir(path + '/' + category):
+			continue
 		for src_file in process_asset_category_root(path + '/' + category, category, symbols):
 			src_paths.append(src_file)
 	write_cmake_file(src_paths)
