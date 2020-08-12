@@ -2,6 +2,7 @@ import os
 
 def write_cmake_file(src_paths: list):
 	cmake = open('CMakeLists.txt', 'w+')
+	cmake.write('cmake_minimum_required(VERSION 3.16)\n')
 	cmake.write('project(emico)\n')
 	cmake.write('include_directories(include)\n')
 	cmake.write('add_library(\n')
