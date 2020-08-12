@@ -13,6 +13,11 @@ def write_cmake_file(src_paths: list):
 	for path in src_paths:
 		cmake.write('\t' + path + '\n')
 	cmake.write(')\n')
+	cmake.write('link_libraries(emico)\n')
+	cmake.write('add_executable(\n')
+	cmake.write('\temico-assets\n')
+	cmake.write('\tdemo.cpp\n')
+	cmake.write(')\n')
 
 def write_primary_source_file(symbols: list):
 	psrc = open('src/emico.cpp', 'w+')
