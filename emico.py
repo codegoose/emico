@@ -53,7 +53,7 @@ def transcribe_asset(path: str, entry:str, category: str):
 	src_file = 'src/' + category.replace('.', '/') + '/' + entry + '.cpp'
 	src = open(src_file, 'w+')
 	src.write('#define INCBIN_STYLE INCBIN_STYLE_SNAKE\n')
-	src.write('#include <emico/third-party/incbin.h>\n')
+	src.write('#include <incbin.h>\n')
 	src.write('INCBIN(_emico_%s, "../%s");\n' % ((category + '_' + entry).replace('.', '_'), path))
 	return src_file
 
