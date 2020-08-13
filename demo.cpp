@@ -12,6 +12,12 @@ int main() {
 		
 		cout << "\t" << asset.first << // Unique ID based on the original file path.
 			" : " << asset.second.first << // The memory address of the file contents.
-			" (" << asset.second.second << " bytes)" << endl; // Length in bytes of the content.
+			" (" << asset.second.second << " bytes) < "; // Length in bytes of the content.
+		
+		for (int i = 0; i < 10 && i < asset.second.second; i++) {
+			cout << static_cast<int>(reinterpret_cast<const char *>(asset.second.first)[i]) << " ";
+		}
+
+		cout << " ... >" << endl;
 	}
 }
