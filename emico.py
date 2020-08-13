@@ -21,12 +21,21 @@ def write_cmake_file(src_paths: list):
 
 def write_primary_source_file(symbols: list):
 	psrc = open('src/emico.cpp', 'w+')
+	psrc.write('#define INCBIN_STYLE INCBIN_STYLE_SNAKE\n')
 	psrc.write('#include <emico.h>\n')
-	for buncha in symbols:
-		psrc.write(buncha[1] + ';\n')
-		psrc.write(buncha[2] + ';\n')
+	psrc.write('#include <incbin.h>\n')
+	for symbol in symbols:
+		psrc.write('INCBIN_EXTERN(%s%s);\n' % ('_emico_', symbol[0]))
 	psrc.write('const std::map<std::string, std::pair<const void *, unsigned int>> emico::assets {\n')
-	psrc.write(',\n'.join(['\t{ "%s", { %s, %s } }' % (x[0], x[1].split('extern const unsigned char *')[1], x[2].split('extern const unsigned int ')[1]) for x in symbols]))
+	psrc.write(
+		',\n'.join(
+			['\t{ "%s", { g_emico_%s_data, g_emico_%s_size } }' % (
+				x[1] + '.' + x[2],
+				x[0], # incbin g_%s_data
+				x[0] # incbin g_%s_size
+			) for x in symbols]
+		)
+	)
 	psrc.write('\n};\n')
 
 def begin(path: str):
@@ -48,14 +57,14 @@ def process_asset_category_root(path: str, category: str, symbols):
 			for src_file in process_asset_category_root(path + '/' + entry, category + '.' + entry, symbols):
 				src_paths.append(src_file)
 		elif os.path.isfile(path + '/' + entry):
-			src_paths.append(transcribe_asset(path + '/' + entry, entry, category))
+			src_paths.append(transcribe_asset(path + '/' + entry, entry, category, symbols))
 			p_symbol = ('%s_%s' % (category, entry)).replace('.', '_')
 			begin_symbol = 'extern const unsigned char *g_emico_' + p_symbol + '_data'
 			size_symbol = 'extern const unsigned int g_emico_' + p_symbol + '_size'
-			symbols.append((category + '.' + entry, begin_symbol, size_symbol))
+			# symbols.append((category + '.' + entry, begin_symbol, size_symbol))
 	return src_paths
 
-def transcribe_asset(path: str, entry:str, category: str):
+def transcribe_asset(path: str, entry:str, category: str, symbols: list):
 	print('\t transcribe -> (' + path + ')', entry, '->', category)
 	os.makedirs('src/' + category.replace('.', '/'), exist_ok=True)
 	src_file = 'src/' + category.replace('.', '/') + '/' + entry + '.cpp'
@@ -63,6 +72,7 @@ def transcribe_asset(path: str, entry:str, category: str):
 	src.write('#define INCBIN_STYLE INCBIN_STYLE_SNAKE\n')
 	src.write('#include <incbin.h>\n')
 	src.write('INCBIN(_emico_%s, "../%s");\n' % ((category + '_' + entry).replace('.', '_'), path))
+	symbols.append(((category + '_' + entry).replace('.', '_'), category, entry))
 	return src_file
 
 if __name__ == "__main__":
